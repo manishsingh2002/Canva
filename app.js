@@ -1,19 +1,19 @@
 /* ═══════════════════════════════════════════════════════
    APEX POST STUDIO v2 — app.js
-   Full logic: State · History · Formats · Themes · Render
+   Full logic: State · History · Formats · Themes · Render · JSON Import/Export
 ═══════════════════════════════════════════════════════ */
 
 // ════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════
 let currentSlideIndex = 0;
-let currentTemplate   = 'dark-gold';
-let currentAccent     = '#c9a84c';
-let mainFontSize      = 38;
-let currentFormat     = 'post'; // 'post' | 'portrait' | 'story'
+let currentTemplate = 'dark-gold';
+let currentAccent = '#c9a84c';
+let mainFontSize = 38;
+let currentFormat = 'post'; // 'post' | 'portrait' | 'story'
 
 // History
-let history      = [];
+let history = [];
 let historyIndex = -1;
 const MAX_HISTORY = 40;
 
@@ -25,42 +25,42 @@ function imgKey(slideIdx, field) { return `s${slideIdx}_i${field}`; }
 //  FORMAT CONFIG
 // ════════════════════════════════════════════════
 const FORMAT_CONFIG = {
-  post:     { w: 1080, h: 1080, label: '1080 × 1080 · Square Post'    },
-  portrait: { w: 1080, h: 1350, label: '1080 × 1350 · Portrait 4:5'   },
-  story:    { w: 1080, h: 1920, label: '1080 × 1920 · Story / Reel 9:16' }
+  post: { w: 1080, h: 1080, label: '1080 × 1080 · Square Post' },
+  portrait: { w: 1080, h: 1350, label: '1080 × 1350 · Portrait 4:5' },
+  story: { w: 1080, h: 1920, label: '1080 × 1920 · Story / Reel 9:16' }
 };
 
 // ════════════════════════════════════════════════
 //  TEMPLATE ACCENTS
 // ════════════════════════════════════════════════
 const TEMPLATE_ACCENTS = {
-  'dark-gold':  '#c9a84c',
+  'dark-gold': '#c9a84c',
   'light-warm': '#a07830',
-  'obsidian':   '#a078dc',
-  'ivory':      '#b03030',
-  'slate':      '#50a0dc',
+  'obsidian': '#a078dc',
+  'ivory': '#b03030',
+  'slate': '#50a0dc',
   'matte-rose': '#e080a0',
-  'forest':     '#60c878',
-  'midnight':   '#7090e8',
-  'charcoal':   '#e8e8e8',
-  'deep-wine':  '#c0305a',
-  'sand':       '#8b6340',
-  'noir':       '#ffffff'
+  'forest': '#60c878',
+  'midnight': '#7090e8',
+  'charcoal': '#e8e8e8',
+  'deep-wine': '#c0305a',
+  'sand': '#8b6340',
+  'noir': '#ffffff'
 };
 
 const TEMPLATE_BG = {
-  'dark-gold':  '#0a0a0a',
+  'dark-gold': '#0a0a0a',
   'light-warm': '#faf5ec',
-  'obsidian':   '#0d0d14',
-  'ivory':      '#f5f0e4',
-  'slate':      '#1a1f2e',
+  'obsidian': '#0d0d14',
+  'ivory': '#f5f0e4',
+  'slate': '#1a1f2e',
   'matte-rose': '#1a1015',
-  'forest':     '#0d140f',
-  'midnight':   '#080810',
-  'charcoal':   '#1c1c1c',
-  'deep-wine':  '#110008',
-  'sand':       '#e8ddc8',
-  'noir':       '#050505'
+  'forest': '#0d140f',
+  'midnight': '#080810',
+  'charcoal': '#1c1c1c',
+  'deep-wine': '#110008',
+  'sand': '#e8ddc8',
+  'noir': '#050505'
 };
 
 const LIGHT_TEMPLATES = ['light-warm', 'ivory', 'sand'];
@@ -216,13 +216,285 @@ const defaultCardData = {
 //  INITIAL SLIDES
 // ════════════════════════════════════════════════
 let slides = [
-  { type: 'hook',         ...defaultCardData.hook },
-  { type: 'product',      ...defaultCardData.product },
-  { type: 'compare',      ...defaultCardData.compare },
-  { type: 'stat',         ...defaultCardData.stat },
-  { type: 'quote',        ...defaultCardData.quote },
-  { type: 'closing',      ...defaultCardData.closing }
+  { type: 'hook', ...defaultCardData.hook },
+  { type: 'product', ...defaultCardData.product },
+  { type: 'compare', ...defaultCardData.compare },
+  { type: 'stat', ...defaultCardData.stat },
+  { type: 'quote', ...defaultCardData.quote },
+  { type: 'closing', ...defaultCardData.closing }
 ];
+
+// ════════════════════════════════════════════════
+//  JSON IMPORT / EXPORT
+// ════════════════════════════════════════════════
+
+// Sample JSON schema showing all possible card types
+const SAMPLE_JSON = {
+  "_comment": "APEX Post Studio — JSON Import. Set theme, format, accent, then define your slides array.",
+  "theme": "dark-gold",
+  "format": "post",
+  "accent": "#c9a84c",
+  "fontSize": 38,
+  "slides": [
+    {
+      "type": "hook",
+      "category": "Pro Tip",
+      "hook": "Stop overpaying for standard tech.",
+      "accent": "overpaying",
+      "sub": "We source the best gear so you never have to compromise.",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "stat",
+      "eyebrow": "Did You Know",
+      "number": "94%",
+      "unit": "Customer Satisfaction Rate",
+      "desc": "Based on 10,000+ verified reviews from customers across India.",
+      "source": "Source: Internal Survey 2024",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "compare",
+      "category": "Standard vs Premium",
+      "avg": "Buys unbranded tech. No warranty. Hidden repair costs.",
+      "elite": "Invests in trusted brands. Extended warranty. Total peace of mind.",
+      "bottom": "Value is what you get, not just what you pay.",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "list",
+      "eyebrow": "Top Picks",
+      "title": "Top Tech Upgrades",
+      "items": "4K Smart LED Displays\nHigh-Efficiency Inverter ACs\nNext-Gen Gaming Laptops\nNoise-Cancelling Audio",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "framework",
+      "category": "How To Choose A TV",
+      "steps": "Measure your room viewing distance.\nChoose OLED for dark rooms or QLED for bright.\nCheck HDMI 2.1 for gaming.",
+      "closing": "Visit our store for a live demo.",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "quote",
+      "quote": "Quality is remembered long after the price is forgotten.",
+      "author": "Aldo Gucci",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "timeline",
+      "eyebrow": "Our Journey",
+      "title": "Built Over Years of Trust",
+      "items": "2018: Founded with a single store in Mumbai.\n2020: Expanded to 5 cities across India.\n2022: Crossed 1 lakh happy customers.\n2024: Launched online delivery pan-India.",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "promo",
+      "eyebrow": "Limited Time Offer",
+      "title": "Summer Tech Sale",
+      "price": "Up to 40% Off",
+      "detail": "On all Smart TVs & Audio",
+      "cta": "Tap To Shop Now",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "manifesto",
+      "tag": "Our Philosophy",
+      "body": "We don't just sell products. We build relationships that last a lifetime.",
+      "sub": "Every product we carry is tested, trusted, and backed by our promise.",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "announcement",
+      "flash": "🔥 Just Announced",
+      "headline": "Grand\nOpening",
+      "desc": "We're launching our biggest store yet in Connaught Place, New Delhi.",
+      "cta": "Save the Date →",
+      "brand": "YOUR BRAND"
+    },
+    {
+      "type": "closing",
+      "closing": "\"Your trusted tech partner.\"",
+      "handle": "@yourbrand",
+      "brand": "YOUR BRAND"
+    }
+  ]
+};
+
+function openJsonModal() {
+  document.getElementById('json-modal-backdrop').classList.add('open');
+  document.getElementById('json-paste-area').value = '';
+  document.getElementById('json-error').textContent = '';
+  document.getElementById('json-error').style.display = 'none';
+  document.getElementById('json-file-name').textContent = '';
+  switchJsonTab('import');
+}
+
+function closeJsonModal(e) {
+  if (e && e.target !== document.getElementById('json-modal-backdrop')) return;
+  document.getElementById('json-modal-backdrop').classList.remove('open');
+}
+
+function switchJsonTab(tab) {
+  document.getElementById('json-panel-import').style.display = tab === 'import' ? '' : 'none';
+  document.getElementById('json-panel-export').style.display = tab === 'export' ? '' : 'none';
+  document.getElementById('tab-import').classList.toggle('active', tab === 'import');
+  document.getElementById('tab-export').classList.toggle('active', tab === 'export');
+}
+
+function previewExportJson() {
+  const exportData = buildExportData();
+  document.getElementById('json-preview-area').value = JSON.stringify(exportData, null, 2);
+}
+
+function buildExportData() {
+  return {
+    "_comment": "APEX Post Studio — Exported project",
+    "theme": currentTemplate,
+    "format": currentFormat,
+    "accent": currentAccent,
+    "fontSize": mainFontSize,
+    "slides": slides.map(s => {
+      const clean = { ...s };
+      // Keep URL images, strip base64
+      ['img1', 'img2'].forEach(f => { if (clean[f] && clean[f].startsWith('data:')) clean[f] = ''; });
+      return clean;
+    })
+  };
+}
+
+function handleJsonDrop(event) {
+  event.preventDefault();
+  document.getElementById('json-drop-zone').classList.remove('drag-over');
+  const file = event.dataTransfer.files[0];
+  if (!file || !file.name.endsWith('.json')) {
+    showToast('Please drop a .json file', true); return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('json-paste-area').value = e.target.result;
+    document.getElementById('json-file-name').textContent = '✓ ' + file.name;
+  };
+  reader.readAsText(file);
+}
+
+function downloadSampleJson() {
+  const blob = new Blob([JSON.stringify(SAMPLE_JSON, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'apex-sample.json';
+  a.click();
+  showToast('Sample JSON downloaded!');
+}
+
+function copySampleJson() {
+  navigator.clipboard.writeText(JSON.stringify(SAMPLE_JSON, null, 2))
+    .then(() => showToast('Sample JSON copied to clipboard!'))
+    .catch(() => {
+      document.getElementById('json-paste-area').value = JSON.stringify(SAMPLE_JSON, null, 2);
+      showToast('Pasted into editor — copy from there');
+    });
+}
+
+function exportCurrentJson() {
+  const exportData = buildExportData();
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `apex-project-${Date.now()}.json`;
+  a.click();
+  showToast('Project exported as JSON!');
+}
+
+function handleJsonFileUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('json-paste-area').value = e.target.result;
+    document.getElementById('json-file-name').textContent = '✓ ' + input.files[0].name;
+  };
+  reader.readAsText(input.files[0]);
+}
+
+function applyJsonImport() {
+  const raw = document.getElementById('json-paste-area').value.trim();
+  const errEl = document.getElementById('json-error');
+  errEl.style.display = 'none';
+
+  if (!raw) {
+    errEl.textContent = 'Please paste or upload a JSON first.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    errEl.textContent = 'Invalid JSON: ' + e.message;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Validate slides array
+  if (!data.slides || !Array.isArray(data.slides) || data.slides.length === 0) {
+    errEl.textContent = 'JSON must have a "slides" array with at least one slide.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Validate each slide has a valid type
+  const validTypes = Object.keys(defaultCardData);
+  const invalidSlides = data.slides.filter(s => !s.type || !validTypes.includes(s.type));
+  if (invalidSlides.length > 0) {
+    errEl.textContent = `Invalid slide type(s): ${invalidSlides.map(s => s.type || 'missing').join(', ')}. Valid types: ${validTypes.join(', ')}`;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  saveHistory();
+
+  // Apply global settings if present
+  if (data.theme && TEMPLATE_ACCENTS[data.theme]) {
+    currentTemplate = data.theme;
+    currentAccent = data.accent || TEMPLATE_ACCENTS[data.theme];
+    // Sync theme chips
+    document.querySelectorAll('.chip').forEach(c => {
+      const m = c.getAttribute('onclick')?.match(/'([^']+)'/);
+      c.classList.toggle('active', m && m[1] === currentTemplate);
+    });
+  }
+  if (data.accent) {
+    currentAccent = data.accent;
+    document.getElementById('custom-color-picker').value = data.accent;
+  }
+  if (data.format && FORMAT_CONFIG[data.format]) {
+    currentFormat = data.format;
+    document.querySelectorAll('.fmt-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.fmt === currentFormat));
+    document.getElementById('ig-card').dataset.format = currentFormat;
+    document.getElementById('canvas-size-label').textContent = FORMAT_CONFIG[currentFormat].label;
+  }
+  if (data.fontSize && data.fontSize >= 16 && data.fontSize <= 72) {
+    mainFontSize = data.fontSize;
+    document.getElementById('rng-hooksize').value = mainFontSize;
+    document.getElementById('rng-val').textContent = mainFontSize;
+  }
+
+  // Build slides: merge defaults + user data
+  slides = data.slides.map(slideData => {
+    const type = slideData.type;
+    const defaults = { ...defaultCardData[type] };
+    // User data overrides defaults
+    return { ...defaults, ...slideData };
+  });
+
+  currentSlideIndex = 0;
+  closeJsonModal();
+  refreshAll();
+  saveHistory();
+  showToast(`✓ Imported ${slides.length} card${slides.length > 1 ? 's' : ''} successfully!`);
+}
 
 // ════════════════════════════════════════════════
 //  HISTORY / UNDO / REDO
@@ -255,30 +527,25 @@ function redoAction() {
 }
 
 function applyHistoryState(state) {
-  slides             = JSON.parse(JSON.stringify(state.slides));
-  currentSlideIndex  = state.currentSlideIndex;
-  currentTemplate    = state.currentTemplate;
-  currentAccent      = state.currentAccent;
-  mainFontSize       = state.mainFontSize;
-  currentFormat      = state.currentFormat || 'post';
+  slides = JSON.parse(JSON.stringify(state.slides));
+  currentSlideIndex = state.currentSlideIndex;
+  currentTemplate = state.currentTemplate;
+  currentAccent = state.currentAccent;
+  mainFontSize = state.mainFontSize;
+  currentFormat = state.currentFormat || 'post';
 
   document.getElementById('rng-hooksize').value = mainFontSize;
   document.getElementById('rng-val').textContent = mainFontSize;
 
-  // Sync theme chips
   document.querySelectorAll('.chip').forEach(c => {
     const m = c.getAttribute('onclick')?.match(/'([^']+)'/);
     c.classList.toggle('active', m && m[1] === currentTemplate);
   });
-  // Sync swatches
   document.querySelectorAll('.swatch').forEach(s =>
     s.classList.toggle('active', s.dataset.color === currentAccent));
-
-  // Sync format buttons
   document.querySelectorAll('.fmt-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.fmt === currentFormat));
 
-  // Update card format
   document.getElementById('ig-card').dataset.format = currentFormat;
   document.getElementById('canvas-size-label').textContent = FORMAT_CONFIG[currentFormat].label;
 
@@ -311,9 +578,9 @@ function setFormat(fmt, btn) {
 //  MOBILE SIDEBAR
 // ════════════════════════════════════════════════
 function toggleSidebar() {
-  const s    = document.getElementById('sidebar');
-  const b    = document.getElementById('backdrop');
-  const btn  = document.getElementById('mobile-toggle-btn');
+  const s = document.getElementById('sidebar');
+  const b = document.getElementById('backdrop');
+  const btn = document.getElementById('mobile-toggle-btn');
   const open = s.classList.toggle('open');
   b.classList.toggle('visible', open);
   btn.textContent = open ? '✕ Close' : '✦ Edit';
@@ -356,6 +623,54 @@ function removeImage(imgField, slideIdx) {
   renderSidebar();
 }
 
+// Image tab switching (upload vs URL)
+function switchImgTab(imgField, slideIdx, tab, btn) {
+  const uploadPanel = document.getElementById(`imgpanel-upload-${imgField}-${slideIdx}`);
+  const urlPanel = document.getElementById(`imgpanel-url-${imgField}-${slideIdx}`);
+  const tabs = btn.closest('.img-source-tabs').querySelectorAll('.img-src-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'upload') {
+    uploadPanel.classList.remove('hidden');
+    urlPanel.classList.add('hidden');
+  } else {
+    uploadPanel.classList.add('hidden');
+    urlPanel.classList.remove('hidden');
+  }
+}
+
+// Debounced URL input handler
+function handleImageUrl(input, imgField, slideIdx) {
+  clearTimeout(handleImageUrl._timers = handleImageUrl._timers || {});
+  const key = `${imgField}_${slideIdx}`;
+  clearTimeout(handleImageUrl._timers[key]);
+  handleImageUrl._timers[key] = setTimeout(() => {
+    const url = input.value.trim();
+    if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:'))) {
+      applyImageUrl(url, imgField, slideIdx);
+    }
+  }, 600);
+}
+
+// Immediate URL load on button click
+function loadImageUrl(imgField, slideIdx) {
+  const input = document.getElementById(`urlinput-${imgField}-${slideIdx}`);
+  if (!input) return;
+  const url = input.value.trim();
+  if (!url) { showToast('Enter an image URL first', true); return; }
+  applyImageUrl(url, imgField, slideIdx);
+}
+
+function applyImageUrl(url, imgField, slideIdx) {
+  slides[slideIdx][imgField] = url;
+  const k = imgKey(slideIdx, imgField);
+  imgStore[k] = { src: url, scale: 1, x: 50, y: 50, rotate: 0 };
+  saveHistory();
+  updatePost();
+  renderSidebar();
+  showToast('✓ Image URL applied');
+}
+
 function getCropImg(slideIdx, imgField) {
   const src = slides[slideIdx]?.[imgField];
   if (!src) return `<div class="img-placeholder">[ TAP SIDEBAR TO UPLOAD ]</div>`;
@@ -373,7 +688,7 @@ function updateCrop(slideIdx, imgField, prop, val) {
   imgStore[k][prop] = parseFloat(val);
   const valEl = document.getElementById(`cv-${prop}-${imgField}-${slideIdx}`);
   if (valEl) {
-    if (prop === 'scale')  valEl.textContent = parseFloat(val).toFixed(2) + '×';
+    if (prop === 'scale') valEl.textContent = parseFloat(val).toFixed(2) + '×';
     else if (prop === 'rotate') valEl.textContent = val + '°';
     else valEl.textContent = val + '%';
   }
@@ -384,13 +699,13 @@ function resetCrop(slideIdx, imgField) {
   const k = imgKey(slideIdx, imgField);
   const src = imgStore[k]?.src || slides[slideIdx]?.[imgField] || '';
   imgStore[k] = { src, scale: 1, x: 50, y: 50, rotate: 0 };
-  ['scale','x','y','rotate'].forEach(p => {
+  ['scale', 'x', 'y', 'rotate'].forEach(p => {
     const defaults = { scale: 1, x: 50, y: 50, rotate: 0 };
     const inp = document.querySelector(`input[oninput*="updateCrop(${slideIdx},'${imgField}','${p}'"]`);
     if (inp) inp.value = defaults[p];
     const valEl = document.getElementById(`cv-${p}-${imgField}-${slideIdx}`);
     if (valEl) {
-      if (p === 'scale')  valEl.textContent = '1.00×';
+      if (p === 'scale') valEl.textContent = '1.00×';
       else if (p === 'rotate') valEl.textContent = '0°';
       else valEl.textContent = '50%';
     }
@@ -402,10 +717,10 @@ function resetCrop(slideIdx, imgField) {
 //  SIDEBAR EDITOR
 // ════════════════════════════════════════════════
 function renderSidebar() {
-  const el  = document.getElementById('dynamic-editor');
-  const d   = slides[currentSlideIndex];
+  const el = document.getElementById('dynamic-editor');
+  const d = slides[currentSlideIndex];
   const idx = currentSlideIndex;
-  let html  = `<div class="section-label">Edit: ${d.label || d.type}</div>`;
+  let html = `<div class="section-label">Edit: ${d.label || d.type}</div>`;
 
   const inp = (key, label) =>
     `<div class="field"><label>${label}</label>
@@ -419,16 +734,35 @@ function renderSidebar() {
 
   const imgUpload = (imgField, label) => {
     const hasImg = !!d[imgField];
-    const cropId = `crop-${imgField}-${idx}`;
-    const k = imgStore[imgKey(idx, imgField)] || { scale: 1, x: 50, y: 50, rotate: 0 };
+    const isUrl = hasImg && !d[imgField].startsWith('data:');
+    const imgTabId = `imgtab-${imgField}-${idx}`;
     return `
     <div class="field">
       <label>${label}</label>
-      <div class="img-upload-zone ${hasImg ? 'has-img' : ''}" id="zone-${imgField}-${idx}">
-        <input type="file" accept="image/*" onchange="handleImageUpload(this,'${imgField}',${idx})">
-        <div class="upload-icon">🖼</div>
-        <div class="upload-label">${hasImg ? '✓ Loaded — tap to change' : 'Tap to upload image'}</div>
+      <div class="img-source-tabs">
+        <button class="img-src-tab ${!isUrl || !hasImg ? 'active' : ''}" onclick="switchImgTab('${imgField}',${idx},'upload',this)">⬆ Upload</button>
+        <button class="img-src-tab ${isUrl && hasImg ? 'active' : ''}" onclick="switchImgTab('${imgField}',${idx},'url',this)">🔗 URL</button>
       </div>
+
+      <div class="img-tab-panel img-tab-upload ${!isUrl || !hasImg ? '' : 'hidden'}" id="imgpanel-upload-${imgField}-${idx}">
+        <div class="img-upload-zone ${hasImg && !isUrl ? 'has-img' : ''}" id="zone-${imgField}-${idx}">
+          <input type="file" accept="image/*" onchange="handleImageUpload(this,'${imgField}',${idx})">
+          <div class="upload-icon">🖼</div>
+          <div class="upload-label">${hasImg && !isUrl ? '✓ Loaded — tap to change' : 'Tap to upload image'}</div>
+        </div>
+      </div>
+
+      <div class="img-tab-panel img-tab-url ${isUrl && hasImg ? '' : 'hidden'}" id="imgpanel-url-${imgField}-${idx}">
+        <div class="url-input-wrap">
+          <input type="url" class="url-img-input" placeholder="https://example.com/image.jpg"
+            value="${isUrl ? esc(d[imgField]) : ''}"
+            oninput="handleImageUrl(this,'${imgField}',${idx})"
+            id="urlinput-${imgField}-${idx}">
+          <button class="url-load-btn" onclick="loadImageUrl('${imgField}',${idx})">Load</button>
+        </div>
+        ${isUrl && hasImg ? `<div class="url-preview-wrap"><img src="${esc(d[imgField])}" class="url-preview-thumb" onerror="this.style.display='none'" alt="preview"></div>` : ''}
+      </div>
+
       ${hasImg ? `
         <button class="open-crop-btn" onclick="openCropModal(${idx},'${imgField}')">
           ✂ Drag &amp; Crop / Adjust
@@ -438,66 +772,65 @@ function renderSidebar() {
     </div>`;
   };
 
-  // Per-type editor fields
   switch (d.type) {
     case 'hook':
-      html += inp('category','Top Tag') + ta('hook','Main Hook Text') + inp('accent','Word to Highlight') + ta('sub','Sub Text');
+      html += inp('category', 'Top Tag') + ta('hook', 'Main Hook Text') + inp('accent', 'Word to Highlight') + ta('sub', 'Sub Text');
       break;
     case 'quote':
-      html += ta('quote','Quote Text') + inp('author','Author / Source');
+      html += ta('quote', 'Quote Text') + inp('author', 'Author / Source');
       break;
     case 'compare':
-      html += inp('category','Title') + ta('avg','Standard Box') + ta('elite','Premium Box') + ta('bottom','Bottom Quote');
+      html += inp('category', 'Title') + ta('avg', 'Standard Box') + ta('elite', 'Premium Box') + ta('bottom', 'Bottom Quote');
       break;
     case 'framework':
-      html += inp('category','Heading') + ta('steps','Steps (one per line)') + inp('closing','Closing Note');
+      html += inp('category', 'Heading') + ta('steps', 'Steps (one per line)') + inp('closing', 'Closing Note');
       break;
     case 'list':
-      html += inp('eyebrow','Eyebrow') + inp('title','Title') + ta('items','Items (one per line)');
+      html += inp('eyebrow', 'Eyebrow') + inp('title', 'Title') + ta('items', 'Items (one per line)');
       break;
     case 'closing':
-      html += ta('closing','Main Text') + inp('handle','Social Handle');
+      html += ta('closing', 'Main Text') + inp('handle', 'Social Handle');
       break;
     case 'caption':
-      html += ta('caption','Caption Text') + inp('tags','Hashtags (space-separated)');
+      html += ta('caption', 'Caption Text') + inp('tags', 'Hashtags (space-separated)');
       break;
     case 'stat':
-      html += inp('eyebrow','Eyebrow') + inp('number','Big Number / Stat') + inp('unit','Unit Label') + ta('desc','Description') + inp('source','Source (small)');
+      html += inp('eyebrow', 'Eyebrow') + inp('number', 'Big Number / Stat') + inp('unit', 'Unit Label') + ta('desc', 'Description') + inp('source', 'Source (small)');
       break;
     case 'timeline':
-      html += inp('eyebrow','Eyebrow') + inp('title','Title') + ta('items','Items: YEAR: Text (one per line)');
+      html += inp('eyebrow', 'Eyebrow') + inp('title', 'Title') + ta('items', 'Items: YEAR: Text (one per line)');
       break;
     case 'manifesto':
-      html += inp('tag','Top Tag') + ta('body','Main Body Text') + ta('sub','Sub Text');
+      html += inp('tag', 'Top Tag') + ta('body', 'Main Body Text') + ta('sub', 'Sub Text');
       break;
     case 'media':
-      html += imgUpload('img1','Background Image') + inp('badge','Top Badge') + ta('title','Headline') + ta('text','Description');
+      html += imgUpload('img1', 'Background Image') + inp('badge', 'Top Badge') + ta('title', 'Headline') + ta('text', 'Description');
       break;
     case 'product':
-      html += imgUpload('img1','Product Image') + inp('title','Product Name') + inp('price','Price') + ta('specs','Specs (one per line)') + inp('cta','Button Text');
+      html += imgUpload('img1', 'Product Image') + inp('title', 'Product Name') + inp('price', 'Price') + ta('specs', 'Specs (one per line)') + inp('cta', 'Button Text');
       break;
     case 'split':
-      html += imgUpload('img1','Top Image') + inp('textTop','Top Label');
-      html += imgUpload('img2','Bottom Image') + inp('textBottom','Bottom Label') + inp('centerTag','Center Tag');
+      html += imgUpload('img1', 'Top Image') + inp('textTop', 'Top Label');
+      html += imgUpload('img2', 'Bottom Image') + inp('textBottom', 'Bottom Label') + inp('centerTag', 'Center Tag');
       break;
     case 'review':
-      html += imgUpload('img1','Customer Photo') + inp('rating','Stars') + ta('quote','Review Text') + inp('author','Customer Name') + inp('role','Subtitle / Role');
+      html += imgUpload('img1', 'Customer Photo') + inp('rating', 'Stars') + ta('quote', 'Review Text') + inp('author', 'Customer Name') + inp('role', 'Subtitle / Role');
       break;
     case 'expert':
-      html += imgUpload('img1','Person Photo') + inp('name','Name') + inp('title','Subtitle') + ta('quote','Quote / Message');
+      html += imgUpload('img1', 'Person Photo') + inp('name', 'Name') + inp('title', 'Subtitle') + ta('quote', 'Quote / Message');
       break;
     case 'promo':
-      html += inp('eyebrow','Eyebrow') + ta('title','Main Title') + inp('price','Price / Offer') + inp('detail','Detail Text') + inp('cta','CTA Button');
+      html += inp('eyebrow', 'Eyebrow') + ta('title', 'Main Title') + inp('price', 'Price / Offer') + inp('detail', 'Detail Text') + inp('cta', 'CTA Button');
       break;
     case 'carousel':
-      html += imgUpload('img1','Background Image') + inp('number','Slide Number e.g. 01') + ta('title','Title') + ta('desc','Description') + inp('dots','Total Dots') + inp('activeDot','Active Dot #');
+      html += imgUpload('img1', 'Background Image') + inp('number', 'Slide Number e.g. 01') + ta('title', 'Title') + ta('desc', 'Description') + inp('dots', 'Total Dots') + inp('activeDot', 'Active Dot #');
       break;
     case 'announcement':
-      html += inp('flash','Flash Badge') + ta('headline','Big Headline (use \\n for break)') + ta('desc','Description') + inp('cta','CTA Text');
+      html += inp('flash', 'Flash Badge') + ta('headline', 'Big Headline (use \\n for break)') + ta('desc', 'Description') + inp('cta', 'CTA Text');
       break;
   }
 
-  html += `<div style="margin-top:4px;">${inp('brand','Brand Watermark')}</div>`;
+  html += `<div style="margin-top:4px;">${inp('brand', 'Brand Watermark')}</div>`;
   el.innerHTML = html;
 }
 
@@ -513,10 +846,10 @@ function updateSlideData(key, value) {
 // ════════════════════════════════════════════════
 function esc(s) {
   return (s || '').toString()
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function highlight(text, word) {
@@ -761,14 +1094,14 @@ function renderSlideHTML(d, idx) {
 // ════════════════════════════════════════════════
 function updatePost() {
   const card = document.getElementById('ig-card');
-  const d    = slides[currentSlideIndex];
+  const d = slides[currentSlideIndex];
 
   card.innerHTML = renderSlideHTML(d, currentSlideIndex);
   card.style.setProperty('--gold', currentAccent);
   card.setAttribute('data-template', currentTemplate);
 
   const total = slides.length;
-  const cur   = currentSlideIndex + 1;
+  const cur = currentSlideIndex + 1;
   document.getElementById('slide-counter').textContent = `${cur} / ${total}`;
 
   const prevBtn = document.getElementById('prev-btn');
@@ -833,11 +1166,10 @@ function addSlide() {
 
 function duplicateSlide() {
   saveHistory();
-  const copy   = JSON.parse(JSON.stringify(slides[currentSlideIndex]));
+  const copy = JSON.parse(JSON.stringify(slides[currentSlideIndex]));
   const oldIdx = currentSlideIndex;
   const newIdx = currentSlideIndex + 1;
   slides.splice(newIdx, 0, copy);
-  // Copy image store for duplicated slide
   ['img1', 'img2'].forEach(f => {
     const oldKey = imgKey(oldIdx, f);
     if (imgStore[oldKey]) imgStore[imgKey(newIdx, f)] = { ...imgStore[oldKey] };
@@ -890,7 +1222,7 @@ function setCustomAccent(color) {
 
 function toggleAppTheme() {
   const current = document.documentElement.getAttribute('data-theme');
-  const next    = current === 'dark' ? 'light' : 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   document.getElementById('theme-btn').textContent = next === 'dark' ? '☀' : '☾';
 }
@@ -918,26 +1250,21 @@ function showToast(msg, isError) {
 //  EXPORT — true off-screen render at exact px
 // ════════════════════════════════════════════════
 async function renderToCanvas(slideIdx) {
-  const fmt  = FORMAT_CONFIG[currentFormat];
-  const W    = fmt.w;   // e.g. 1080
-  const H    = fmt.h;   // e.g. 1080 / 1350 / 1920
-  const bg   = TEMPLATE_BG[currentTemplate] || '#0a0a0a';
-  const fg   = LIGHT_TEMPLATES.includes(currentTemplate) ? '#1a1510' : '#f0ebe0';
-  const acc  = currentAccent;
+  const fmt = FORMAT_CONFIG[currentFormat];
+  const W = fmt.w;
+  const H = fmt.h;
+  const bg = TEMPLATE_BG[currentTemplate] || '#0a0a0a';
+  const fg = LIGHT_TEMPLATES.includes(currentTemplate) ? '#1a1510' : '#f0ebe0';
+  const acc = currentAccent;
 
-  // Scale factor: all sizes authored for 400px wide preview → scale to W
   const BASE = 400;
-  const S    = W / BASE;   // e.g. 1080/400 = 2.7
+  const S = W / BASE;
 
-  // --- build export-scale slide HTML ---
-  // We override mainFontSize-based sizes with S-scaled values inline
   const savedFS = mainFontSize;
-  // Temporarily scale mainFontSize for renderSlideHTML
   mainFontSize = Math.round(savedFS * S);
   const slideHTML = renderSlideHTML(slides[slideIdx], slideIdx);
   mainFontSize = savedFS;
 
-  // --- off-screen container ---
   const wrap = document.createElement('div');
   wrap.style.cssText = `
     position: fixed;
@@ -954,14 +1281,11 @@ async function renderToCanvas(slideIdx) {
     font-family: 'Syne', sans-serif;
   `;
 
-  // Inject a scoped stylesheet that scales ALL the CSS classes by S
   const styleEl = document.createElement('style');
-  const p = (v) => `${Math.round(v * S)}px`;  // scaled pixels helper
+  const p = (v) => `${Math.round(v * S)}px`;
 
   styleEl.textContent = `
     #__exp * { box-sizing: border-box; }
-
-    /* Layout base */
     #__exp .card-layout {
       width: 100%; height: 100%;
       display: flex; flex-direction: column;
@@ -975,8 +1299,6 @@ async function renderToCanvas(slideIdx) {
       font-size: ${p(10)}; letter-spacing: ${p(3.5)};
       opacity: 0.22; z-index: 10; pointer-events: none;
     }
-
-    /* HOOK */
     #__exp .card-hook { justify-content: center; }
     #__exp .badge {
       font-family: 'IBM Plex Mono', monospace;
@@ -988,13 +1310,9 @@ async function renderToCanvas(slideIdx) {
     }
     #__exp .rule { width: ${p(30)}; height: ${p(3)}; background: ${acc}; margin-bottom: ${p(16)}; border-radius: 99px; }
     #__exp .sub-text { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10.5)}; line-height: 1.7; opacity: 0.6; }
-
-    /* QUOTE */
     #__exp .card-quote { justify-content: center; text-align: center; }
     #__exp .quote-mark { font-family: 'DM Serif Display', serif; font-size: ${p(62)}; color: ${acc}; line-height: 1; margin-bottom: ${p(8)}; }
     #__exp .quote-author { font-family: 'IBM Plex Mono', monospace; font-size: ${p(9.5)}; letter-spacing: ${p(2)}; color: ${acc}; text-transform: uppercase; }
-
-    /* COMPARE */
     #__exp .card-compare { justify-content: center; }
     #__exp .compare-label { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(2.2)}; text-transform: uppercase; color: ${acc}; margin-bottom: ${p(4)}; }
     #__exp .compare-cols { display: flex; flex-direction: column; gap: ${p(10)}; }
@@ -1003,8 +1321,6 @@ async function renderToCanvas(slideIdx) {
     #__exp .col-label { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7)}; letter-spacing: ${p(2.5)}; text-transform: uppercase; opacity: 0.45; margin-bottom: ${p(5)}; }
     #__exp .col-text { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10)}; line-height: 1.7; opacity: 0.78; }
     #__exp .compare-bottom { margin-top: ${p(18)}; font-family: 'DM Serif Display', serif; font-style: italic; font-size: ${p(12)}; opacity: 0.45; border-top: ${p(1)} solid currentColor; padding-top: ${p(14)}; line-height: 1.5; }
-
-    /* FRAMEWORK */
     #__exp .card-framework { justify-content: center; }
     #__exp .fw-title { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(2.8)}; text-transform: uppercase; color: ${acc}; margin-bottom: ${p(11)}; }
     #__exp .fw-steps { display: flex; flex-direction: column; gap: ${p(14)}; }
@@ -1012,8 +1328,6 @@ async function renderToCanvas(slideIdx) {
     #__exp .step-num { font-family: 'Bebas Neue', sans-serif; font-size: ${p(24)}; line-height: 1; color: ${acc}; opacity: 0.65; min-width: ${p(26)}; }
     #__exp .step-text { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10.5)}; line-height: 1.65; opacity: 0.72; padding-top: ${p(3)}; }
     #__exp .fw-closing { margin-top: ${p(20)}; border-top: ${p(1)} solid currentColor; padding-top: ${p(14)}; font-family: 'DM Serif Display', serif; font-style: italic; font-size: ${p(11.5)}; opacity: 0.4; }
-
-    /* LIST */
     #__exp .card-list { justify-content: center; }
     #__exp .list-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(2.8)}; text-transform: uppercase; color: ${acc}; margin-bottom: ${p(9)}; }
     #__exp .list-items { display: flex; flex-direction: column; gap: ${p(11)}; }
@@ -1021,30 +1335,22 @@ async function renderToCanvas(slideIdx) {
     #__exp .list-item:last-child { border-bottom: none; padding-bottom: 0; }
     #__exp .list-num { font-family: 'Bebas Neue', sans-serif; font-size: ${p(19)}; color: ${acc}; opacity: 0.65; line-height: 1; margin-top: ${p(1)}; min-width: ${p(21)}; }
     #__exp .list-text { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10.5)}; line-height: 1.55; opacity: 0.78; }
-
-    /* CLOSING */
     #__exp .card-closing { align-items: center; justify-content: center; text-align: center; }
     #__exp .closing-rule { width: ${p(1)}; height: ${p(50)}; background: currentColor; opacity: 0.16; margin-bottom: ${p(28)}; }
     #__exp .closing-rule2 { width: ${p(1)}; height: ${p(32)}; background: currentColor; opacity: 0.16; margin-bottom: ${p(20)}; }
     #__exp .closing-brand { font-family: 'Bebas Neue', sans-serif; font-size: ${p(19)}; letter-spacing: ${p(4)}; color: ${acc}; opacity: 0.72; }
     #__exp .closing-handle { font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; letter-spacing: ${p(2)}; opacity: 0.38; margin-top: ${p(5)}; }
-
-    /* CAPTION */
     #__exp .card-caption { justify-content: center; }
     #__exp .cap-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; letter-spacing: ${p(2.8)}; color: ${acc}; text-transform: uppercase; margin-bottom: ${p(18)}; }
     #__exp .cap-text { font-family: 'IBM Plex Mono', monospace; font-size: ${p(12.5)}; line-height: 1.88; opacity: 0.72; }
     #__exp .cap-tags { display: flex; flex-wrap: wrap; gap: ${p(5)}; margin-top: ${p(22)}; }
     #__exp .cap-tag { font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; color: ${acc}; opacity: 0.72; letter-spacing: ${p(0.5)}; border: ${p(1)} solid currentColor; padding: ${p(3)} ${p(7)}; border-radius: ${p(3)}; }
-
-    /* STAT */
     #__exp .card-stat { justify-content: center; align-items: flex-start; }
     #__exp .stat-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(3)}; text-transform: uppercase; color: ${acc}; margin-bottom: ${p(12)}; }
     #__exp .stat-unit { font-family: 'IBM Plex Mono', monospace; font-size: ${p(13)}; letter-spacing: ${p(1.2)}; opacity: 0.45; margin-bottom: ${p(18)}; text-transform: uppercase; }
     #__exp .stat-rule { width: ${p(40)}; height: ${p(3)}; background: ${acc}; margin-bottom: ${p(18)}; border-radius: 99px; }
     #__exp .stat-desc { font-family: 'IBM Plex Mono', monospace; font-size: ${p(11)}; line-height: 1.7; opacity: 0.6; }
     #__exp .stat-source { margin-top: auto; font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(1.5)}; opacity: 0.3; text-transform: uppercase; border-top: ${p(1)} solid currentColor; padding-top: ${p(12)}; }
-
-    /* TIMELINE */
     #__exp .card-timeline { justify-content: center; }
     #__exp .tl-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(3)}; text-transform: uppercase; color: ${acc}; margin-bottom: ${p(8)}; }
     #__exp .tl-items { display: flex; flex-direction: column; position: relative; }
@@ -1054,59 +1360,43 @@ async function renderToCanvas(slideIdx) {
     #__exp .tl-dot { position: absolute; left: ${p(5)}; top: ${p(5)}; width: ${p(10)}; height: ${p(10)}; border-radius: 50%; background: ${acc}; }
     #__exp .tl-year { font-family: 'Bebas Neue', sans-serif; font-size: ${p(14)}; color: ${acc}; opacity: 0.7; min-width: ${p(34)}; line-height: 1; flex-shrink: 0; }
     #__exp .tl-text { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10)}; line-height: 1.55; opacity: 0.72; }
-
-    /* MANIFESTO */
     #__exp .card-manifesto { justify-content: center; align-items: center; text-align: center; position: relative; }
     #__exp .card-manifesto::before { content: ''; position: absolute; inset: ${p(24)}; border: ${p(1)} solid rgba(201,168,76,0.12); border-radius: ${p(4)}; pointer-events: none; }
     #__exp .mf-tag { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7)}; letter-spacing: ${p(4)}; text-transform: uppercase; color: ${acc}; opacity: 0.6; margin-bottom: ${p(28)}; }
     #__exp .mf-rule { width: ${p(28)}; height: ${p(2)}; background: ${acc}; margin: 0 auto ${p(20)}; border-radius: 99px; }
     #__exp .mf-sub { font-family: 'IBM Plex Mono', monospace; font-size: ${p(9.5)}; line-height: 1.7; opacity: 0.5; letter-spacing: ${p(0.6)}; }
-
-    /* MEDIA */
     #__exp .card-media-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
     #__exp .card-media-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.92) 100%); }
     #__exp .card-media { justify-content: flex-end; padding-bottom: ${p(86)}; color: #fff; }
     #__exp .media-badge { background: ${acc}; color: #000; font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(2)}; padding: ${p(3)} ${p(9)}; text-transform: uppercase; align-self: flex-start; margin-bottom: ${p(11)}; font-weight: 700; border-radius: ${p(3)}; }
     #__exp .media-desc { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10.5)}; line-height: 1.6; opacity: 0.88; }
-
-    /* PRODUCT */
     #__exp .card-product-wrap { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
     #__exp .card-product-img { height: 52%; width: 100%; position: relative; overflow: hidden; }
     #__exp .card-product-info { flex: 1; border-top: ${p(2)} solid ${acc}; padding: ${p(16)} ${p(22)} ${p(72)} ${p(22)}; display: flex; flex-direction: column; }
     #__exp .p-price { font-family: 'Bebas Neue', sans-serif; font-size: ${p(20)}; color: ${acc}; letter-spacing: ${p(0.5)}; margin-bottom: ${p(8)}; }
     #__exp .p-specs { font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; line-height: 1.9; opacity: 0.7; flex: 1; }
     #__exp .p-cta { background: ${acc}; color: #000; font-family: 'IBM Plex Mono', monospace; font-size: ${p(9.5)}; font-weight: 700; padding: ${p(8)} ${p(18)}; text-transform: uppercase; letter-spacing: ${p(1.2)}; text-align: center; border-radius: ${p(4)}; margin-top: ${p(8)}; }
-
-    /* SPLIT */
     #__exp .card-split-wrap { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
     #__exp .split-half { flex: 1; position: relative; overflow: hidden; }
     #__exp .split-half img { width: 100%; height: 100%; object-fit: cover; opacity: 0.75; display: block; }
     #__exp .split-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.78), transparent); display: flex; align-items: flex-end; padding: ${p(14)} ${p(18)}; }
     #__exp .split-text { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: ${p(24)}; letter-spacing: ${p(0.8)}; text-shadow: 0 ${p(2)} ${p(8)} rgba(0,0,0,0.8); }
     #__exp .split-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: ${bg}; border: ${p(2)} solid ${acc}; color: ${acc}; font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; font-weight: 700; letter-spacing: ${p(2)}; padding: ${p(7)} ${p(14)}; z-index: 10; text-transform: uppercase; white-space: nowrap; border-radius: ${p(4)}; }
-
-    /* REVIEW */
     #__exp .card-review { justify-content: center; align-items: center; text-align: center; }
     #__exp .stars { color: ${acc}; font-size: ${p(18)}; letter-spacing: ${p(2)}; margin-bottom: ${p(14)}; }
     #__exp .r-avatar { width: ${p(60)}; height: ${p(60)}; border-radius: 50%; overflow: hidden; border: ${p(2)} solid ${acc}; margin-bottom: ${p(10)}; flex-shrink: 0; }
     #__exp .r-name { font-family: 'Bebas Neue', sans-serif; font-size: ${p(17)}; letter-spacing: ${p(1)}; }
     #__exp .r-role { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(2)}; text-transform: uppercase; color: ${acc}; opacity: 0.75; margin-top: ${p(3)}; }
-
-    /* EXPERT */
     #__exp .card-expert { justify-content: center; align-items: center; text-align: center; }
     #__exp .e-img { width: ${p(86)}; height: ${p(86)}; border-radius: 50%; margin-bottom: ${p(16)}; overflow: hidden; border: ${p(3)} solid rgba(201,168,76,0.38); box-shadow: 0 ${p(8)} ${p(28)} rgba(0,0,0,0.4); flex-shrink: 0; }
     #__exp .e-name { font-family: 'Bebas Neue', sans-serif; font-size: ${p(19)}; letter-spacing: ${p(1)}; color: ${acc}; }
     #__exp .e-title { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7.5)}; letter-spacing: ${p(2)}; text-transform: uppercase; opacity: 0.5; margin-bottom: ${p(16)}; }
-
-    /* PROMO */
     #__exp .card-promo { justify-content: center; align-items: center; text-align: center; }
     #__exp .promo-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; letter-spacing: ${p(2.8)}; text-transform: uppercase; color: ${acc}; margin-bottom: ${p(10)}; }
     #__exp .promo-price-box { border: ${p(1.5)} solid ${acc}; padding: ${p(14)} ${p(22)}; margin-bottom: ${p(18)}; background: rgba(201,168,76,0.04); border-radius: ${p(6)}; }
     #__exp .promo-price { font-family: 'DM Serif Display', serif; font-size: ${p(36)}; color: ${acc}; line-height: 1; margin-bottom: ${p(4)}; }
     #__exp .promo-detail { font-family: 'IBM Plex Mono', monospace; font-size: ${p(8.5)}; opacity: 0.6; letter-spacing: ${p(1)}; }
     #__exp .promo-cta { font-family: 'IBM Plex Mono', monospace; font-size: ${p(10.5)}; background: ${acc}; color: #000; padding: ${p(11)} ${p(26)}; font-weight: 700; text-transform: uppercase; letter-spacing: ${p(1.8)}; border-radius: ${p(4)}; }
-
-    /* CAROUSEL */
     #__exp .card-carousel { justify-content: flex-end; position: relative; }
     #__exp .cr-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
     #__exp .cr-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, transparent 20%, rgba(0,0,0,0.9) 100%); }
@@ -1116,14 +1406,10 @@ async function renderToCanvas(slideIdx) {
     #__exp .cr-dot-row { display: flex; gap: ${p(5)}; margin-top: ${p(14)}; }
     #__exp .cr-dot { width: ${p(6)}; height: ${p(6)}; border-radius: 50%; background: rgba(255,255,255,0.3); }
     #__exp .cr-dot.active { background: ${acc}; width: ${p(18)}; border-radius: 99px; }
-
-    /* ANNOUNCEMENT */
     #__exp .card-announcement { justify-content: center; align-items: center; text-align: center; }
     #__exp .ann-flash { font-family: 'IBM Plex Mono', monospace; font-size: ${p(7)}; letter-spacing: ${p(5)}; text-transform: uppercase; border: ${p(1)} solid ${acc}; color: ${acc}; padding: ${p(4)} ${p(12)}; border-radius: 100px; margin-bottom: ${p(22)}; }
     #__exp .ann-desc { font-family: 'IBM Plex Mono', monospace; font-size: ${p(11)}; line-height: 1.7; opacity: 0.58; margin-bottom: ${p(26)}; }
     #__exp .ann-cta { display: inline-flex; align-items: center; gap: ${p(8)}; background: ${acc}; color: #000; font-family: 'IBM Plex Mono', monospace; font-size: ${p(10)}; font-weight: 700; padding: ${p(10)} ${p(24)}; border-radius: ${p(4)}; letter-spacing: ${p(1.5)}; text-transform: uppercase; }
-
-    /* DM Serif headings used in many types */
     #__exp .hook-text, #__exp .quote-text, #__exp .compare-title,
     #__exp .fw-heading, #__exp .list-header, #__exp .closing-main,
     #__exp .tl-title, #__exp .r-quote, #__exp .e-quote,
@@ -1135,8 +1421,6 @@ async function renderToCanvas(slideIdx) {
     #__exp .mf-body { font-family: 'Playfair Display', serif; font-weight: 700; }
     #__exp .ann-headline { font-family: 'Bebas Neue', sans-serif; line-height: 0.88; letter-spacing: ${p(0.3)}; text-transform: uppercase; }
     #__exp .promo-title { font-family: 'Bebas Neue', sans-serif; line-height: 0.92; letter-spacing: ${p(0.4)}; text-transform: uppercase; margin-bottom: ${p(20)}; }
-
-    /* img fill helpers */
     #__exp .crop-img-wrap, #__exp .card-media-bg div,
     #__exp .card-product-img div, #__exp .cr-bg div,
     #__exp .split-half div, #__exp .r-avatar div, #__exp .e-img div {
@@ -1153,7 +1437,6 @@ async function renderToCanvas(slideIdx) {
     #__exp .accent { color: ${acc}; }
   `;
 
-  // Build the card wrapper
   const card = document.createElement('div');
   card.id = '__exp';
   card.style.cssText = `
@@ -1170,7 +1453,6 @@ async function renderToCanvas(slideIdx) {
   wrap.appendChild(card);
   document.body.appendChild(wrap);
 
-  // Wait for fonts + images
   await new Promise(r => setTimeout(r, 400));
 
   const canvas = await html2canvas(card, {
@@ -1195,8 +1477,8 @@ async function downloadCurrentSlide() {
   showLoading('Rendering card...');
   try {
     const canvas = await renderToCanvas(currentSlideIndex);
-    const link   = document.createElement('a');
-    const fmt    = FORMAT_CONFIG[currentFormat];
+    const link = document.createElement('a');
+    const fmt = FORMAT_CONFIG[currentFormat];
     link.download = `apex-card-${currentSlideIndex + 1}-${slides[currentSlideIndex].type}-${currentFormat}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
@@ -1214,21 +1496,21 @@ async function downloadAllSlides() {
     return;
   }
   showLoading(`Preparing ${slides.length} cards...`);
-  const zip    = new JSZip();
+  const zip = new JSZip();
   const folder = zip.folder('apex-cards');
-  const fmt    = FORMAT_CONFIG[currentFormat];
+  const fmt = FORMAT_CONFIG[currentFormat];
   try {
     for (let i = 0; i < slides.length; i++) {
       document.getElementById('loading-text').textContent = `Rendering ${i + 1} / ${slides.length}...`;
       const canvas = await renderToCanvas(i);
-      const blob   = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
       folder.file(`card-${i + 1}-${slides[i].type}-${currentFormat}.png`, blob);
       await new Promise(r => setTimeout(r, 80));
     }
     document.getElementById('loading-text').textContent = 'Creating ZIP...';
     const content = await zip.generateAsync({ type: 'blob' });
-    const link    = document.createElement('a');
-    link.href     = URL.createObjectURL(content);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
     link.download = `apex-${slides.length}cards-${currentFormat}-${fmt.w}x${fmt.h}.zip`;
     link.click();
     showToast(`✓ ${slides.length} cards saved as ZIP!`);
@@ -1246,15 +1528,14 @@ document.addEventListener('keydown', e => {
   const tag = document.activeElement.tagName.toLowerCase();
   if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
 
-  if (e.key === 'ArrowLeft')  { e.preventDefault(); prevSlide(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
   else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
   else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undoAction(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) { e.preventDefault(); redoAction(); }
   else if ((e.ctrlKey || e.metaKey) && e.key === 'd') { e.preventDefault(); duplicateSlide(); }
-  // Format shortcuts
-  else if (e.key === '1' && !e.ctrlKey) setFormat('post',     document.querySelector('[data-fmt="post"]'));
+  else if (e.key === '1' && !e.ctrlKey) setFormat('post', document.querySelector('[data-fmt="post"]'));
   else if (e.key === '2' && !e.ctrlKey) setFormat('portrait', document.querySelector('[data-fmt="portrait"]'));
-  else if (e.key === '3' && !e.ctrlKey) setFormat('story',    document.querySelector('[data-fmt="story"]'));
+  else if (e.key === '3' && !e.ctrlKey) setFormat('story', document.querySelector('[data-fmt="story"]'));
 });
 
 // ════════════════════════════════════════════════
